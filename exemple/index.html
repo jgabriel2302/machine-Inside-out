@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Primary Meta Tags -->
+    <title>Machine Inside Out</title>
+    <meta name="title" content="Machine Inside Out">
+    <meta name="description" content="These applications illustrate the power of neural networks for detailed financial forecasting. To explain how this technology works, we simplified the concept with an interactive page, where you can draw numbers from 0 to 9 on an 18x18-pixel canvas. This more compact model is easy and quick to train, allowing us to understand the primary steps in training and using a neural network. Once again, to prove that is not an out of this world thing i programmed the Neural Network from scratch using JavaScript. created by João Gabriel Corrêa da Silva">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Machine Inside Out">
+    <meta property="og:description" content="These applications illustrate the power of neural networks for detailed financial forecasting. To explain how this technology works, we simplified the concept with an interactive page, where you can draw numbers from 0 to 9 on an 18x18-pixel canvas. This more compact model is easy and quick to train, allowing us to understand the primary steps in training and using a neural network. Once again, to prove that is not an out of this world thing i programmed the Neural Network from scratch using JavaScript. created by João Gabriel Corrêa da Silva">
+    <meta property="og:image" content="">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Machine Inside Out">
+    <meta property="twitter:description" content="These applications illustrate the power of neural networks for detailed financial forecasting. To explain how this technology works, we simplified the concept with an interactive page, where you can draw numbers from 0 to 9 on an 18x18-pixel canvas. This more compact model is easy and quick to train, allowing us to understand the primary steps in training and using a neural network. Once again, to prove that is not an out of this world thing i programmed the Neural Network from scratch using JavaScript. created by João Gabriel Corrêa da Silva">
+    <meta property="twitter:image" content="">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Gilroy', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eee;
+        }
+
+        header {
+            background-color: #ffde59;
+            background-image: linear-gradient(to right, #ffde59, #fbac50);
+            border-radius: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            padding: 0.1em 1em;
+            margin: 1em 0.1em;
+        }
+
+        .btn {
+            border-radius: 5px;
+            height: 40px;
+            min-width: 40px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none!important;
+            color: #fbac50!important;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            outline: none;
+        }
+
+        .btn>* {
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: " ";
+            position: absolute;
+            width: calc(100% - 2px);
+            height: calc(100% - 2px);
+            border-radius: 5px;
+            background-image: linear-gradient(to right, #ffde59, #fbac50);
+            z-index: 0;
+            transform: translate(0, 105%);
+            transition: transform cubic-bezier(0.865, -0.600, 0.320, 1.605) 0.3s;
+        }
+
+        .btn.danger {
+            color: #fe4c4c!important;
+        }
+
+        .btn.success {
+            color: #4caf50!important;
+        }
+
+        .btn.danger::before {
+            background-image: linear-gradient(to right, #ffde59, #fe4c4c);
+        }
+
+        .btn.success::before {
+            background-image: linear-gradient(to right, #ffde59, #4caf50);
+        }
+
+        .btn:hover {
+            color: white!important;
+            transition: all cubic-bezier(0.865, -0.600, 0.320, 1.605) 0.3s;
+        }
+
+        .btn:hover::before {
+            transform: translate(0, 0);
+        }
+
+        .canvas, canvas {
+            background-color: #fff;
+            border-radius: 0.3em;
+            box-shadow: 0 0 2px #0002;
+            display: flex;
+            flex-wrap: wrap;
+            overflow: hidden;
+        }
+
+        .canvas .pixel {
+            display: inline-flex;
+            /* outline: solid 0.01em #0001; */
+        }
+
+        .canvas .pixel.active {
+            background-color: currentColor;
+        }
+        
+        .canvas .pixel:hover {
+            background-color: #0001;
+        }
+
+        .canvas .pixel.active:hover {
+            background-color: currentColor;
+            /* outline: solid 0.01em #fff1; */
+        }
+        
+        .result {
+            display: flex;
+        }
+
+        .resultsquare {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background-color: #1e5c20;
+            border-radius: 0.1em;
+            margin: 0.2em;
+            color: #fff;
+            transition: transform cubic-bezier(0.865, -0.600, 0.320, 1.605) 0.3s ;
+        }
+
+        .resultsquare.active {
+            transform: scale(1.2);
+            background-color: #ffbf00;
+        }
+
+        .resultsquare span:first-child {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #fff8;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                height: auto;
+                padding: 0.5em;
+                font-size: 0.9em;
+                border-radius: 20px;
+                max-width: calc(100% - 5em);
+                margin: 0.5em auto;
+            }
+            .btn {
+                height: 35px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1em;
+            }
+            header {
+                font-size: 0.8em;
+                padding: 0.5em;
+                border-radius: 15px;
+            }
+            .btn {
+                height: 30px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <article>
+        <header>Machine Inside Out</header>
+        <section name="instructions">
+            <p>These applications illustrate the power of neural networks for detailed financial forecasting. To explain how this technology works, we simplified the concept with an interactive page, where you can draw numbers from 0 to 9 on an 18x18-pixel canvas. This more compact model is easy and quick to train, allowing us to understand the primary steps in training and using a neural network. Once again, to prove that is not an out of this world thing i programmed the Neural Network from scratch using JavaScript.</p>
+        </section>
+        <section name="app">
+            <div style="display: flex;justify-self: center;">
+                <div id="jg_canvas"></div>
+            </div>
+            <div class="result" style="display: flex;justify-self: center;">
+                <div class='resultsquare' id="result0"><span style="height: 0%;"></span><span>0</span></div>
+                <div class='resultsquare' id="result1"><span style="height: 0%;"></span><span>1</span></div>
+                <div class='resultsquare' id="result2"><span style="height: 0%;"></span><span>2</span></div>
+                <div class='resultsquare' id="result3"><span style="height: 0%;"></span><span>3</span></div>
+                <div class='resultsquare' id="result4"><span style="height: 0%;"></span><span>4</span></div>
+                <div class='resultsquare' id="result5"><span style="height: 0%;"></span><span>5</span></div>
+                <div class='resultsquare' id="result6"><span style="height: 0%;"></span><span>6</span></div>
+                <div class='resultsquare' id="result7"><span style="height: 0%;"></span><span>7</span></div>
+                <div class='resultsquare' id="result8"><span style="height: 0%;"></span><span>8</span></div>
+                <div class='resultsquare' id="result9"><span style="height: 0%;"></span><span>9</span></div>
+            </div>
+            <button class="btn danger" type="button" id="clear"><span>Clear</span></button>
+            <button class="btn success" type="button" id="predict"><span>Predict</span></button>
+        </section>
+        <section name="links">
+            <a class='btn' href='https://www.linkedin.com/in/jo%C3%A3o-gabriel-corr%C3%AAa-da-silva/'><span>in</span></a>
+        </section>
+    </article>
+    <script src="./../NNA.js"></script>
+    <script>
+        class JGCanvas {
+            static defaultOptions = {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                grid: [3]
+            }
+            static init(DOM_Id, options){
+                return new JGCanvas(DOM_Id, options);
+            }
+            static mergeOptions(obj1, obj2) {
+              for (let key in obj2) {
+                if (obj2.hasOwnProperty(key)) {
+                  if (obj2[key] instanceof Object && obj1[key] instanceof Object) {
+                    obj1[key] = JGCanvas.mergeOptions(obj1[key], obj2[key]);
+                  } else {
+                    obj1[key] = obj2[key];
+                  }
+                }
+              }
+              return obj1;
+            }
+
+            static Pixel = class {
+                #state = false;
+                #index = -1;
+                #element = null;
+                constructor(index = 0, width = 1, height = 1, parent = null){
+                    this.#state = false;
+                    this.#index = index;
+                    this.#element = document.createElement('div');
+                    this.#element.classList.add('pixel');
+                    this.#element.style.width = `${width}px`;
+                    this.#element.style.height = `${height}px`;
+                    this.#element.addEventListener('click', ()=>this.toggle());
+                    this.#element.pixel = this;
+                    if(parent) parent.appendChild(this.#element);
+                }
+                toggle(){
+                    this.state = !this.state;
+                }
+                activate(){
+                    this.state = true;
+                }
+                deactivate(){
+                    this.state = false;
+                }
+                get element(){
+                    return this.#element;
+                }
+                get index(){
+                    return this.#index;
+                }
+                get state(){
+                    return this.#state;
+                }
+                set state(value){
+                    if(value===true) this.#element.classList.add('active');
+                    if(value===false) this.#element.classList.remove('active');
+                    return this.#state = value;
+                }
+            }
+            
+            
+            setup(){
+                if(this.element.classList.contains('canvas')) this.element.innerHTML = '';
+                this.element.classList.add('canvas');
+                this.element.style.width = `${this.options.width}px`;
+                this.element.style.height = `${this.options.height}px`;
+                this.mountGrid()
+            }
+            mountGrid(){
+                const grid = this.options.grid ?? [];
+                let x = 0, y = 0;
+                if(grid.length > 1) x = grid[0], y = grid[grid.length-1]
+                if(grid.length === 1) x = grid[0], y = grid[0]
+
+                this.pixels = new Array(x * y).fill({});
+                this.grid = {x, y};
+                this.drawing = false;
+
+                for (let index = 0; index < this.pixels.length; index++) {
+                    this.pixels[index] = new JGCanvas.Pixel(index, this.options.width / x, this.options.height / y, this.element );
+                    this.pixels[index].element.addEventListener('mouseover', (e)=>{
+                        if(this.drawing===false) return;
+                        e.target.pixel.activate();
+                    })
+                }
+
+                this.element.addEventListener('mousedown', ()=>this.drawing = true);
+                window.addEventListener('mouseup', ()=>this.drawing = false);
+            }
+            constructor(id, options){
+                if(typeof id !== "string") throw "";
+                if(typeof options !== "object" || Array.isArray(options) || options === null) options = JGCanvas.defaultOptions;
+                
+                this.element = document.querySelector(`#${id}`);
+                if(this.element === null) throw "";
+                
+                this.options = JGCanvas.mergeOptions(JGCanvas.defaultOptions, options);
+                
+                this.setup();
+            }
+
+            clear(){
+                this.pixels = this.pixels.map(p=>{
+                    p.state = false;
+                    return p;
+                })
+            }
+            get size(){
+                return this.pixels.length;
+            }
+
+            get data(){
+                return this.pixels.map(p=>Number(p.state));
+            }
+
+            set data(value){
+                if(!Array.isArray(value)) return;
+                for (let index = 0; index < value.length; index++) {
+                    this.pixels[index].state = value[index]===0? false: true;                    
+                }
+            }
+        }
+        (function() {
+            const draw = JGCanvas.init('jg_canvas', {
+                width: 300,
+                height: 300,
+                grid: [18]
+            });
+
+            NeuralNetwork.fetch('./model.ann').then(Brain=>{
+                const output = document.querySelector('#output');
+                const predict = document.querySelector('#predict');
+                const clear = document.querySelector('#clear');
+    
+                clear.addEventListener('click', ()=>{
+                    draw.clear();
+                });
+    
+                predict.addEventListener('click', ()=>{
+                    const result = NeuralNetwork.feedForward(draw.data, Brain);
+                    for (let ri = 0; ri < result.length; ri++) {
+                        document.querySelector(`#result${ri}`).classList.remove('active');
+                        document.querySelector(`#result${ri} span:first-child`).style.height = `${result[ri]*100}%`
+                    }
+                    
+                    const predictedDigit = result.indexOf(Math.max(...result))
+                    document.querySelector(`#result${predictedDigit}`).classList.add('active');
+                });
+            });
+        })()
+    </script>
+</body>
+
+</html>
